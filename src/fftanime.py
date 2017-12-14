@@ -46,15 +46,18 @@ def readadc(ch):
 
 def update(x):
     plt.cla()
-
+    humm = np.hamming(x.shape[-1])
+    
     X = np.fft.fft(x)
+    Xwin = np.fft.fft(x*humm)
     #freq = np.fft.fftfreq(x.shape[-1])
-    freq = np.arange(x.shape[-1])
-    plt.subplot(211)
+    freq = np.linspace(0, x.shape[-1],x.shape[-1])
+    plt.subplot(311)
     plt.plot(freq, np.abs(X))
-    plt.subplot(212)
+    plt.subplot(312)
+    plt.plot(freq, np.abs(Xwin))
+    plt.subplot(313)
     plt.plot(freq, np.degrees(np.angle(X)))
-    plt.show()
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(SPI_SCLK, GPIO.OUT)
@@ -62,31 +65,44 @@ GPIO.setup(SPI_MOSI, GPIO.OUT)
 GPIO.setup(SPI_MISO, GPIO.IN)
 GPIO.setup(SPI_CE, GPIO.OUT)
 
-lastval=0
-fs = 1000
-count = 0
-val = 0
-x = np.zeros(fs)
 
+import matplotlib.animation as anm
+fig = plt.figure(figsize = (10, 6))
+def anime(i):
+    
+    plt.cla()
+
+    lastval=0
+    fs = 10000
+    count = 0
+    val = 0
+    sample = 1000
+    x = np.zeros(sample)
+    t = time.time()
+    try:
+        while True:
+            val = readadc(0)
+            
+            if count == sample:
+                count = 0
+                #print(x)
+                print(time.time() - t)
+                x = x/3000 - 1
+                update(x)
+                return
+            x[count] = val
+            count += 1
+
+            # """
+            #s = "*" * (int)(val/200)
+            #print(s)
+            time.sleep(1/fs/2)
+            
+    except KeyboardInterrupt:
+        GPIO.cleanup()
+        quit()
 try:
-    while True:
-        val = readadc(0)
-        
-        if count == fs:
-            count = 0
-            x = x/4096
-            update(x)
-            print(val)
-        x[count] = val
-        count += 1
-
-        # """
-        #s = "*" * (int)(val/200)
-        #print(s)
-        time.sleep(1/fs)
-        
-except KeyboardInterrupt:
-    pass
-
-GPIO.cleanup()
-
+    ani = anm.FuncAnimation(fig, anime, interval=100)
+    plt.show()
+except:
+    GPIO.cleanup()
