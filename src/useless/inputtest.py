@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 
 #test for input
 import RPi.GPIO as GPIO

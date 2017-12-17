@@ -1,9 +1,8 @@
+#!/usr/bin/python3
 import numpy as np
 import serial
 import sys
 import time
-import matplotlib
-import matplotlib.pyplot as plt
 import RPi.GPIO as GPIO
 
 SPI_SCLK = 11
@@ -62,31 +61,41 @@ GPIO.setup(SPI_MOSI, GPIO.OUT)
 GPIO.setup(SPI_MISO, GPIO.IN)
 GPIO.setup(SPI_CE, GPIO.OUT)
 
-lastval=0
-fs = 1000
-count = 0
-val = 0
-x = np.zeros(fs)
+if __name__ == "__main__":
+    lastval=0
+    fs = 100
+    count = 0
+    val = 0
+    x = np.zeros(fs)
 
-try:
-    while True:
-        val = readadc(0)
-        
-        if count == fs:
-            count = 0
-            x = x/4096
-            update(x)
-            print(val)
-        x[count] = val
-        count += 1
+    try:
+        timer = time.time()
+        for i in range(100000):
+            val0 = readadc(0)
+            val1 = readadc(1)
+            """
+            if count == fs:
+                count = 0
+                x = x/4096
+                update(x)
+                print(val)
+            x[count] = val
+            count += 1
 
-        # """
-        #s = "*" * (int)(val/200)
-        #print(s)
-        time.sleep(1/fs)
-        
-except KeyboardInterrupt:
-    pass
+            # """
+            num0 = (int)(val0/200)
+            num1 = (int)(val1/200)
+            s0 = "*" * num0 + " " * (20 - num0) 
+            s1 = "*" * num1 + " " * (20 - num1) 
+            s = s0 + " | " + s1
+            print(s)
+            #sign = "-----" if (val0 - val1)<0 else "++++++++++" 
+            #print(sign)
+            #time.sleep(1.0/fs)
+        print("100000times;", time.time()-timer)
+            
+    except KeyboardInterrupt:
+        pass
 
-GPIO.cleanup()
+    GPIO.cleanup()
 
