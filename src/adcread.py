@@ -58,42 +58,18 @@ def fft(ch):
         x[i] = adcread(ch)
         time.sleep(0.0001)
     X = np.fft.fft((x / 4096 - 0.5) * win)
-    print(time.time() - timer)
+    #print(time.time() - timer)
     return np.abs(X[:n/2])
 
 if __name__ == "__main__":
-    lastval=0
-    fs = 100
-    count = 0
-    val = 0
-    x = np.zeros(fs)
-
     try:
-        timer = time.time()
-        for i in range(100000):
-            val0 = readadc(0)
-            val1 = readadc(1)
-            """
-            if count == fs:
-                count = 0
-                x = x/4096
-                update(x)
-                print(val)
-            x[count] = val
-            count += 1
+        while(True):
+            x0 = fft(0)
+            x1 = fft(1)
+            print("x0:{},\t{}".format(np.argmax(x0), np.max(x0)))
+            print("x1:{},\t{}".format(np.argmax(x1), np.max(x1)))
+            #time.sleep(0.5)    
 
-            # """
-            num0 = (int)(val0/200)
-            num1 = (int)(val1/200)
-            s0 = "*" * num0 + " " * (20 - num0) 
-            s1 = "*" * num1 + " " * (20 - num1) 
-            s = s0 + " | " + s1
-            print(s)
-            #sign = "-----" if (val0 - val1)<0 else "++++++++++" 
-            #print(sign)
-            #time.sleep(1.0/fs)
-        print("100000times;", time.time()-timer)
-            
     except KeyboardInterrupt:
         pass
 
