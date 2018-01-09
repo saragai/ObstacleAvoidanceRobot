@@ -1,34 +1,39 @@
-#!/usr/bin/python3
+#!/usr/bin/python
 import time
 import RPi.GPIO as GPIO
 
 GPIO.setmode(GPIO.BCM)
-AIN1 = 19
-AIN2 = 26
-freq = 1
+MODE = 5
+AIN1 = 6
+AIN2 = 13
+BIN1 = 19
+BIN2 = 26
 
+GPIO.setup(MODE, GPIO.OUT)
 GPIO.setup(AIN1, GPIO.OUT)
 GPIO.setup(AIN2, GPIO.OUT)
+GPIO.setup(BIN1, GPIO.OUT)
+GPIO.setup(BIN2, GPIO.OUT)
 
-GPIO.output(AIN1, True)
-GPIO.output(AIN2, False)
-time.sleep(1.0)
-#pAIN1 = GPIO.PWM(AIN1, freq)
-#pAIN2 = GPIO.PWM(AIN2, freq)
+GPIO.output(MODE, False)
 
-#pAIN1.start(0)
-#pAIN2.start(0)
+def motor(a):
+    GPIO.output(AIN1, a[0])
+    GPIO.output(AIN2, a[1])
+    GPIO.output(BIN1, a[2])
+    GPIO.output(BIN2, a[3])
 
-try:
-    while True:
-        for dc in range(100):
-            GPIO.output(AIN2, True)
-            #pAIN1.ChangeDutyCycle(50)
+
+if __name__ == "__main__":
+    try:
+        while True:
+            motor([1,0,0,1])
             time.sleep(1)
-            #pAIN1.ChangeDutyCycle(80)
-            GPIO.output(AIN2, False)
+            motor([0,0,0,0])
             time.sleep(1)
-except KeyboardInterrupt:
-    #pAIN1.stop()
-    #pAIN2.stop()
-    GPIO.cleanup()
+            motor([0,1,1,0])
+            time.sleep(1)
+            motor([0,0,0,0])
+            time.sleep(1)
+    except KeyboardInterrupt:
+        GPIO.cleanup()
