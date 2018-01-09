@@ -24,9 +24,7 @@ def get_accel_data_lsb():
     z = read_word(ACC_Z)
     return [x,y,z]
 
-try:
+if __name__ == "__main__":
     while 1:
         print(get_accel_data_lsb())
         time.sleep(0.01)
-except:
-    pass

@@ -1,23 +1,34 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 import time
 import RPi.GPIO as GPIO
 
-GPIO.setmode(GPIO.BOARD)
-GPIO.setup(8, GPIO.OUT)
-GPIO.setup(10, GPIO.OUT)
+GPIO.setmode(GPIO.BCM)
+AIN1 = 19
+AIN2 = 26
+freq = 1
 
-count = 0
-while count < 64:
-    flag1 = False
-    flag2 = False
-    if count % 2:
-        flag2 = True
-    if count % 4 >= 2:
-        flag1 = True
-    
-    GPIO.output(8, flag1)
-    GPIO.output(10, flag2)
-    count += 1
-    time.sleep(0.25)
+GPIO.setup(AIN1, GPIO.OUT)
+GPIO.setup(AIN2, GPIO.OUT)
 
-GPIO.cleanup()
+GPIO.output(AIN1, True)
+GPIO.output(AIN2, False)
+time.sleep(1.0)
+#pAIN1 = GPIO.PWM(AIN1, freq)
+#pAIN2 = GPIO.PWM(AIN2, freq)
+
+#pAIN1.start(0)
+#pAIN2.start(0)
+
+try:
+    while True:
+        for dc in range(100):
+            GPIO.output(AIN2, True)
+            #pAIN1.ChangeDutyCycle(50)
+            time.sleep(1)
+            #pAIN1.ChangeDutyCycle(80)
+            GPIO.output(AIN2, False)
+            time.sleep(1)
+except KeyboardInterrupt:
+    #pAIN1.stop()
+    #pAIN2.stop()
+    GPIO.cleanup()
