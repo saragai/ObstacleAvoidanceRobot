@@ -57,15 +57,20 @@ def fft(ch):
     for i in range(n):
         x[i] = adcread(ch)
         time.sleep(0.0001)
-    X = np.fft.fft((x / 4096 - 0.5) * win)
+    x = x - np.mean(x)
+    X = np.fft.fft((x / np.max(x)) * win)
     #print(time.time() - timer)
     return np.abs(X[:n/2])
 
 if __name__ == "__main__":
     try:
+        print("ch0\n",fft(0))
+        print("ch1\n",fft(1))
+        #time.sleep(3)
+        
         while(True):
-            x0 = fft(0)
             x1 = fft(1)
+            x0 = fft(0)
             print("x0:{},\t{}".format(np.argmax(x0), np.max(x0)))
             print("x1:{},\t{}".format(np.argmax(x1), np.max(x1)))
             #time.sleep(0.5)    
