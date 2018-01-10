@@ -26,6 +26,8 @@ def motor(a):
 
 if __name__ == "__main__":
     try:
+        motor([0,0,0,0])
+        time.sleep(1)
         while True:
             motor([1,0,0,1])
             time.sleep(1)
