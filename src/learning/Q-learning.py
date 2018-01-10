@@ -13,18 +13,18 @@ class Agent:
     def __init__(self):
         self.s = None
         self.a = None
-        self.actions = ((0,0,0,0), (0,0,0,1), (0,0,1,0),
-                        (0,1,0,0), (0,1,0,1), (0,1,1,0),
-                        (1,0,0,0), (1,0,0,1), (1,0,1,0))
+        self.actions = ((1,1,0,1),
+                        (0,1,1,0),
+                        (1,0,1,1), (1,0,0,1))
         self.QNN = Network.Network(512, len(self.actions), weight_init_std=0.1)
 
         #self.oldQNN = copy.deepcopy(self.QNN)
 
         # Hyper Param
-        self.rewardtime = 0.1
-        self.learning_rate = 0.1
-        self.gamma = 0.99
-        self.epsilon = 0.01
+        self.rewardtime = 0.2
+        self.learning_rate = 0.01
+        self.gamma = 0.9
+        self.epsilon = 0.1
 
         self.accel_init = np.array(get_accel_data_lsb())
 
@@ -38,6 +38,7 @@ class Agent:
     def act(self, s):
         # Greedy epsilon
         if np.random.rand() < self.epsilon:
+            print("random")
             self.a = np.random.randint(len(self.actions))
             return self.a
         Q = self.QNN.predict(s)
@@ -60,21 +61,17 @@ class Agent:
 
     def reward(self, t):
         n = int(t*100)
-        r = 0
+        r = 3 * n
         for i in range(n):
             time.sleep(0.01)
             accel = np.array(get_accel_data_lsb())
             accel = np.sum(np.abs(accel - self.accel_init))
             if accel < 1000: 
-                r += -1
+                r += -10
             elif accel > 5000:
                 r += -10 * n
 
-        if r >= -n/3:
-            r = 10
-        else:
-            r = r / n
-        return r
+        return r / n
 
     def initialize(self):
         self.s = self.state()
